@@ -1,0 +1,24 @@
+# Terraform working folders (plugins are re-downloaded by "terraform init")
+**/.terraform/
+
+# State lives in the GCS bucket - never in git
+*.tfstate
+*.tfstate.*
+
+# Plan files can contain sensitive values
+*.tfplan
+
+# Personal / environment-specific values (e.g. your IP)
+*.tfvars
+*.tfvars.json
+
+crash.log
+crash.*.log
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# DO commit .terraform.lock.hcl (pins provider versions)
