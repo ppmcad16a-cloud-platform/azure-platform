@@ -48,6 +48,11 @@ prometheus:
           resources:
             requests:
               storage: 10Gi
+    # Delete the disk claim (and with it the cloud disk) when Prometheus is
+    # uninstalled - otherwise the disk outlives the cluster and costs money.
+    persistentVolumeClaimRetentionPolicy:
+      whenDeleted: Delete
+      whenScaled: Retain
 
 alertmanager:
   alertmanagerSpec:

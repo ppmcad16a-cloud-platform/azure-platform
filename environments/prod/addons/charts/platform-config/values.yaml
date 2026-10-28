@@ -3,3 +3,4 @@ ingressIP: ""
 serviceAnnotations: {}
 sourceRanges: []
 secretStore: {}
+defaultStorageClass: {}
