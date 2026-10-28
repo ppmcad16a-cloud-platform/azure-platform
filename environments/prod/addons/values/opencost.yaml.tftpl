@@ -1,0 +1,16 @@
+opencost:
+  exporter:
+    defaultClusterId: ${cluster}
+  # Read CPU/memory usage from our Prometheus.
+  prometheus:
+    internal:
+      enabled: true
+      namespaceName: monitoring
+      serviceName: kps-prometheus
+      port: 9090
+  # Let Prometheus collect OpenCost's own cost metrics (for Grafana).
+  metrics:
+    serviceMonitor:
+      enabled: true
+  ui:
+    enabled: true

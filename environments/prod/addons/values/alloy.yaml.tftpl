@@ -1,0 +1,58 @@
+# Grafana Alloy collects every container's logs through the Kubernetes API
+# (no access to the node's disks needed) and ships them to Loki.
+controller:
+  type: deployment
+  replicas: 1
+
+alloy:
+  configMap:
+    content: |
+      // 1. Find all pods in the cluster.
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+
+      // 2. Turn pod details into searchable labels.
+      discovery.relabel "pods" {
+        targets = discovery.kubernetes.pods.targets
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app"]
+          target_label  = "app"
+        }
+      }
+
+      // 3. Read the logs of those pods.
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pods.output
+        forward_to = [loki.process.add_cloud.receiver]
+      }
+
+      // 4. Stamp every line with the cloud and cluster name.
+      loki.process "add_cloud" {
+        stage.static_labels {
+          values = {
+            cloud   = "${cloud}",
+            cluster = "${cluster}",
+          }
+        }
+        forward_to = [loki.write.default.receiver]
+      }
+
+      // 5. Send to Loki.
+      loki.write "default" {
+        endpoint {
+          url = "http://loki.monitoring.svc:3100/loki/api/v1/push"
+        }
+      }

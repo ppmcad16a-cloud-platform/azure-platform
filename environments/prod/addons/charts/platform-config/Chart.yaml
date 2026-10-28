@@ -1,0 +1,5 @@
+apiVersion: v2
+name: platform-config
+description: Cluster-wide platform objects for one cloud (front door, secret store, namespaces)
+type: application
+version: 0.1.0

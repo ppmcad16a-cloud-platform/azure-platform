@@ -60,3 +60,20 @@ resource "azurerm_role_assignment" "kubelet_acr_pull" {
   role_definition_name = "AcrPull"
   principal_id         = module.aks.kubelet_object_id
 }
+
+# Fixed public IP for the web entrance (Cloudflare's origin for Azure).
+resource "azurerm_public_ip" "ingress" {
+  name                = "pip-prod-ingress"
+  location            = azurerm_resource_group.cluster.location
+  resource_group_name = azurerm_resource_group.cluster.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = local.tags
+}
+
+# The cluster may attach its load balancer to THIS IP (and nothing else here).
+resource "azurerm_role_assignment" "aks_ingress_ip" {
+  scope                = azurerm_public_ip.ingress.id
+  role_definition_name = "Network Contributor"
+  principal_id         = module.aks.control_plane_principal_id
+}

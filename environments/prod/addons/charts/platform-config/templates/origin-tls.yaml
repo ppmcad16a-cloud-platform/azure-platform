@@ -1,0 +1,23 @@
+# The Cloudflare origin certificate, copied from the vault into a
+# Kubernetes TLS secret that the gateway uses for HTTPS.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: origin-tls
+  namespace: envoy-gateway-system
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: cloud-vault
+  target:
+    name: origin-tls
+    template:
+      type: kubernetes.io/tls
+  data:
+    - secretKey: tls.crt
+      remoteRef:
+        key: mern-origin-tls-crt
+    - secretKey: tls.key
+      remoteRef:
+        key: mern-origin-tls-key
