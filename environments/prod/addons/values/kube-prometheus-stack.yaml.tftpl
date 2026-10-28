@@ -1,0 +1,70 @@
+# Short resource names: "kps-prometheus", "kps-grafana" ...
+fullnameOverride: kps
+
+# GKE runs these control-plane parts itself (we can't scrape them), and
+# Dataplane V2 has no kube-proxy. Switch their targets and rules off,
+# otherwise Prometheus shows them as permanently DOWN.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
+defaultRules:
+  rules:
+    etcd: false
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeProxy: false
+
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    retentionSize: 8GB
+    # Every metric gets these labels, so in the central Grafana (Phase 9)
+    # you can always tell which cloud a number came from.
+    externalLabels:
+      cloud: ${cloud}
+      cluster: ${cluster}
+    # Pick up monitoring targets from ALL namespaces (e.g. our apps in Phase 7),
+    # not only objects created by this chart.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 1Gi
+      limits:
+        memory: 2Gi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+
+grafana:
+  enabled: true
+  defaultDashboardsTimezone: browser
+  persistence:
+    enabled: false
+  # Logs from Loki appear in Grafana next to the metrics.
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki.monitoring.svc:3100
+      access: proxy

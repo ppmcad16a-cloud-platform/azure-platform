@@ -14,3 +14,8 @@ output "kubelet_object_id" {
 output "oidc_issuer_url" {
   value = azurerm_kubernetes_cluster.this.oidc_issuer_url
 }
+
+output "control_plane_principal_id" {
+  description = "The cluster's own identity (manages load balancers)"
+  value       = azurerm_user_assigned_identity.control_plane.principal_id
+}
