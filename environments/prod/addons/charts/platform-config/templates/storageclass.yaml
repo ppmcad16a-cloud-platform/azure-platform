@@ -1,0 +1,17 @@
+{{- /* Only rendered when a cloud passes "defaultStorageClass" (AWS). */ -}}
+{{- with .Values.defaultStorageClass }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .name }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: {{ .provisioner }}
+reclaimPolicy: Delete            # delete the cloud disk when its claim is deleted
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+{{- with .parameters }}
+parameters:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}
