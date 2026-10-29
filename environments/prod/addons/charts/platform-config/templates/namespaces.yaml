@@ -8,3 +8,12 @@ metadata:
     gateway-access: "true"
     pod-security.kubernetes.io/enforce: baseline
     pod-security.kubernetes.io/warn: restricted
+---
+# Monitoring tools (Prometheus, Loki, Grafana). The label lets the
+# Grafana / obs-<cloud> routes use the public gateway.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    gateway-access: "true"
