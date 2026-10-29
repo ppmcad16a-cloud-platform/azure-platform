@@ -1,3 +1,17 @@
+# GKE's outgoing IP (Jenkins runs there). Read from GCP's state; empty if the
+# GKE cluster isn't running yet -> start GCP first, or re-apply afterwards.
+data "terraform_remote_state" "gcp_cluster" {
+  backend = "gcs"
+  config = {
+    bucket = "project-899ced78-a554-40c2-96c-tfstate"
+    prefix = "prod/cluster"
+  }
+}
+
+locals {
+  gke_egress_cidrs = [for ip in compact([try(data.terraform_remote_state.gcp_cluster.outputs.egress_ip, "")]) : "${ip}/32"]
+}
+
 data "azurerm_client_config" "current" {}
 
 # Read the outputs of the foundation stack (registry id etc.).
@@ -48,7 +62,7 @@ module "aks" {
   vnet_id             = module.network.vnet_id
   subnet_id           = module.network.subnet_id
   egress_ip           = module.network.egress_ip
-  admin_cidrs         = [var.admin_cidr]
+  admin_cidrs         = concat([var.admin_cidr], local.gke_egress_cidrs)
   tenant_id           = data.azurerm_client_config.current.tenant_id
   admin_object_ids    = [data.azurerm_client_config.current.object_id] # you
   tags                = local.tags

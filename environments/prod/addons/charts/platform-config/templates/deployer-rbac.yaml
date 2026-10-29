@@ -1,0 +1,56 @@
+{{- /* Rendered only when a cloud lists who may deploy (deployerSubjects). */ -}}
+{{- with .Values.deployerSubjects }}
+# Exactly what "helm upgrade" of our microservice chart needs - in the
+# mern namespace ONLY. No access to other namespaces or cluster settings.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mern-deployer
+  namespace: mern
+rules:
+  - apiGroups: [""]
+    resources: [services, serviceaccounts, secrets, configmaps]   # secrets: Helm stores its release history there
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [""]
+    resources: [pods, pods/log, events]                            # read-only: needed by "helm --wait"
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [apps]
+    resources: [replicasets]
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources: [jobs]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [autoscaling]
+    resources: [horizontalpodautoscalers]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [policy]
+    resources: [poddisruptionbudgets]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [gateway.networking.k8s.io]
+    resources: [httproutes]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [external-secrets.io]
+    resources: [externalsecrets]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [monitoring.coreos.com]
+    resources: [servicemonitors]
+    verbs: [get, list, watch, create, update, patch, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mern-deployer
+  namespace: mern
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mern-deployer
+subjects:
+  {{- toYaml . | nindent 2 }}
+{{- end }}

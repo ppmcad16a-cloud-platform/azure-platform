@@ -75,6 +75,15 @@ resource "helm_release" "platform_config" {
         }
       }
     }
+    # In AKS, an Entra identity's Kubernetes user name is its object ID.
+    deployerSubjects = [
+      {
+        kind     = "User"
+        apiGroup = "rbac.authorization.k8s.io"
+        name     = data.terraform_remote_state.foundation.outputs.jenkins_deployer_principal_id
+      },
+    ]
+
   })]
 
   depends_on = [
