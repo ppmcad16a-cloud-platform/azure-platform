@@ -19,6 +19,11 @@ defaultRules:
     kubeSchedulerAlerting: false
     kubeSchedulerRecording: false
     kubeProxy: false
+  # Always true on our 2-node budget clusters ("if a node dies, the others
+  # cannot hold every pod") and nothing to act on - switched off.
+  disabled:
+    KubeCPUOvercommit: true
+    KubeMemoryOvercommit: true
 
 prometheus:
   prometheusSpec:
