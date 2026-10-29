@@ -83,7 +83,10 @@ resource "helm_release" "platform_config" {
         name     = data.terraform_remote_state.foundation.outputs.jenkins_deployer_principal_id
       },
     ]
-
+    # Prometheus + Loki for the central Grafana (+ Slack for Alertmanager).
+    observability = {
+      backendsHostname = "obs-azure.rishavmukhopadhyay.store" # aws-platform: "obs-aws.rishavmukhopadhyay.store"
+    }
   })]
 
   depends_on = [

@@ -37,5 +37,6 @@ variable "app_secret_names" {
     "mern-seed-admin-password",
     "mern-origin-tls-crt",
     "mern-origin-tls-key",
+    "mern-slack-webhook-url", # Alertmanager -> Slack
   ]
 }

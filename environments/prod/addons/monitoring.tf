@@ -18,9 +18,10 @@ resource "helm_release" "kube_prometheus_stack" {
   chart            = "kube-prometheus-stack"
   version          = "92.6.0"
   namespace        = "monitoring"
-  create_namespace = true
+  create_namespace = false
   wait             = true
   timeout          = 900
+  depends_on       = [helm_release.platform_config]
 
   values = [templatefile("${path.module}/values/kube-prometheus-stack.yaml.tftpl", local.template_vars)]
 
@@ -67,5 +68,13 @@ resource "helm_release" "opencost" {
   wait       = true
 
   values     = [templatefile("${path.module}/values/opencost.yaml.tftpl", local.template_vars)]
+  depends_on = [helm_release.kube_prometheus_stack]
+}
+
+# The shop's recording rules + alerts from the shared
+# observability-platform repo - the SAME tagged version in every cloud.
+module "mern_observability" {
+  source     = "git::https://github.com/ppmcad16a-cloud-platform/observability-platform.git//modules/mern-observability?ref=v1.0.0"
+  cloud      = "azure"
   depends_on = [helm_release.kube_prometheus_stack]
 }
