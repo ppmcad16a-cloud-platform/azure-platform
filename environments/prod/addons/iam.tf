@@ -42,3 +42,11 @@ resource "azurerm_role_assignment" "eso_read" {
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_user_assigned_identity.eso.principal_id
 }
+
+# Jenkins' identity may fetch this cluster's connection details - nothing else
+# at Azure level. Inside the cluster it is limited to "mern" by Kubernetes RBAC.
+resource "azurerm_role_assignment" "jenkins_cluster_user" {
+  scope                = data.azurerm_kubernetes_cluster.this.id
+  role_definition_name = "Azure Kubernetes Service Cluster User Role"
+  principal_id         = data.terraform_remote_state.foundation.outputs.jenkins_deployer_principal_id
+}

@@ -4,3 +4,4 @@ serviceAnnotations: {}
 sourceRanges: []
 secretStore: {}
 defaultStorageClass: {}
+deployerSubjects: []
