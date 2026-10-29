@@ -7,6 +7,23 @@
 # ---------------------------------------------------------------
 locals {
   github_org = "ppmcad16a-cloud-platform"
+
+  # GitHub writes PERMANENT ids into the identity card ("immutable subject"):
+  #   repo:<org>@<org id>/<repo>@<repo id>:ref:refs/heads/main
+  # A repo that is deleted and re-created under the same name gets a NEW id,
+  # so it can never inherit these permissions.
+  # Look up an id with:  gh api repos/<org>/<repo> --jq .id
+  github_org_id = "308835253"
+  github_repo_ids = {
+    "api-gateway-service"  = "1363132826"
+    "identity-service"     = "1347625227"
+    "catalog-service"      = "1345164391"
+    "commerce-service"     = "1363104512"
+    "notification-service" = "1311276453"
+    "client-service"       = "1363120914"
+    "seed-db-service"      = "1363165699"
+  }
+
   ci_services = [
     "api-gateway-service",
     "identity-service",
@@ -32,7 +49,7 @@ resource "azurerm_federated_identity_credential" "ci_push" {
   parent_id           = azurerm_user_assigned_identity.ci_push.id
   audience            = ["api://AzureADTokenExchange"]
   issuer              = "https://token.actions.githubusercontent.com"
-  subject             = "repo:${local.github_org}/${each.value}:ref:refs/heads/main"
+  subject             = "repo:${local.github_org}@${local.github_org_id}/${each.value}@${local.github_repo_ids[each.value]}:ref:refs/heads/main"
 }
 
 resource "azurerm_role_assignment" "ci_push_acr" {
