@@ -74,7 +74,7 @@ resource "helm_release" "opencost" {
 # The shop's recording rules + alerts from the shared
 # observability-platform repo - the SAME tagged version in every cloud.
 module "mern_observability" {
-  source     = "git::https://github.com/ppmcad16a-cloud-platform/observability-platform.git//modules/mern-observability?ref=v1.0.0"
+  source     = "git::https://github.com/ppmcad16a-cloud-platform/observability-platform.git//modules/mern-observability?ref=v1.1.0"
   cloud      = "azure"
   depends_on = [helm_release.kube_prometheus_stack]
 }
