@@ -58,3 +58,11 @@ resource "azurerm_role_assignment" "jenkins_cluster_reader" {
   role_definition_name = "Reader"
   principal_id         = data.terraform_remote_state.foundation.outputs.jenkins_deployer_principal_id
 }
+
+# Stopped-standby failover: GitHub Actions (failover-wake) may START this
+# cluster when GCP fails - read + start only (role from the foundation stack).
+resource "azurerm_role_assignment" "failover_start" {
+  scope              = data.azurerm_kubernetes_cluster.this.id
+  role_definition_id = data.terraform_remote_state.foundation.outputs.aks_start_role_id
+  principal_id       = data.terraform_remote_state.foundation.outputs.failover_principal_id
+}
