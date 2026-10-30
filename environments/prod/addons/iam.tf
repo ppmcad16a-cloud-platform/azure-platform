@@ -50,3 +50,11 @@ resource "azurerm_role_assignment" "jenkins_cluster_user" {
   role_definition_name = "Azure Kubernetes Service Cluster User Role"
   principal_id         = data.terraform_remote_state.foundation.outputs.jenkins_deployer_principal_id
 }
+
+# ... and READ the cluster's properties - only to see Running vs Stopped:
+# a sleeping standby is skipped by the pipeline, not failed.
+resource "azurerm_role_assignment" "jenkins_cluster_reader" {
+  scope                = data.azurerm_kubernetes_cluster.this.id
+  role_definition_name = "Reader"
+  principal_id         = data.terraform_remote_state.foundation.outputs.jenkins_deployer_principal_id
+}
