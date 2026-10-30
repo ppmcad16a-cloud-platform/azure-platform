@@ -1,15 +1,16 @@
-# GKE's outgoing IP (Jenkins runs there). Read from GCP's state; empty if the
-# GKE cluster isn't running yet -> start GCP first, or re-apply afterwards.
-data "terraform_remote_state" "gcp_cluster" {
+# GKE's outgoing IP (Jenkins runs there). Read from GCP's PERMANENT foundation
+# state, so it is known even before GKE exists -> this cluster does not have
+# to wait for GKE (up.yml creates all three at the same time).
+data "terraform_remote_state" "gcp_foundation" {
   backend = "gcs"
   config = {
     bucket = "project-899ced78-a554-40c2-96c-tfstate"
-    prefix = "prod/cluster"
+    prefix = "prod/foundation"
   }
 }
 
 locals {
-  gke_egress_cidrs = [for ip in compact([try(data.terraform_remote_state.gcp_cluster.outputs.egress_ip, "")]) : "${ip}/32"]
+  gke_egress_cidrs = [for ip in compact([try(data.terraform_remote_state.gcp_foundation.outputs.gke_egress_ip, "")]) : "${ip}/32"]
 }
 
 data "azurerm_client_config" "current" {}
