@@ -43,6 +43,22 @@ resource "helm_release" "external_secrets" {
         "azure.workload.identity/tenant-id" = data.azurerm_client_config.current.tenant_id
       }
     }
+    # Images from OUR registry (ACR, inside Azure): pulls from ghcr.io into
+    # Azure Central India stalled for 10+ minutes in two sessions. Copied
+    # once with "az acr import" (see docs; Phase 11's up.yml checks it).
+    image = {
+      repository = "${data.terraform_remote_state.foundation.outputs.acr_login_server}/external-secrets/external-secrets"
+    }
+    webhook = {
+      image = {
+        repository = "${data.terraform_remote_state.foundation.outputs.acr_login_server}/external-secrets/external-secrets"
+      }
+    }
+    certController = {
+      image = {
+        repository = "${data.terraform_remote_state.foundation.outputs.acr_login_server}/external-secrets/external-secrets"
+      }
+    }
   })]
 
   depends_on = [azurerm_federated_identity_credential.eso]

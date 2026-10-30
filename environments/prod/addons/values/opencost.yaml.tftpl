@@ -1,6 +1,9 @@
 opencost:
   exporter:
     defaultClusterId: ${cluster}
+    # Image from our ACR (ghcr.io pulls stall in Azure Central India).
+    image:
+      registry: acrmern0botwx.azurecr.io
   # Read CPU/memory usage from our Prometheus.
   prometheus:
     internal:
@@ -14,3 +17,5 @@ opencost:
       enabled: true
   ui:
     enabled: true
+    image:
+      registry: acrmern0botwx.azurecr.io
