@@ -29,12 +29,12 @@ prometheus:
   prometheusSpec:
     retention: 2d
     retentionSize: 8GB
-    # Every metric gets these labels, so in the central Grafana (Phase 9)
+    # Every metric gets these labels, so in the central Grafana
     # you can always tell which cloud a number came from.
     externalLabels:
       cloud: ${cloud}
       cluster: ${cluster}
-    # Pick up monitoring targets from ALL namespaces (e.g. our apps in Phase 7),
+    # Pick up monitoring targets from ALL namespaces (e.g. the shop in namespace mern),
     # not only objects created by this chart.
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false

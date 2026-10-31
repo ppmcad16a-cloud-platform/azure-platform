@@ -32,7 +32,7 @@ resource "azurerm_container_registry" "this" {
 }
 
 # The "vault" for this cloud: app secrets (MongoDB key, JWT secret) go here
-# in Phase 5 and are read by the cluster with Workload Identity.
+# by global-platform and are read by the cluster with Workload Identity.
 resource "azurerm_key_vault" "this" {
   name                       = "kv-mern-${random_string.suffix.result}"
   location                   = azurerm_resource_group.foundation.location
@@ -45,14 +45,14 @@ resource "azurerm_key_vault" "this" {
   tags                       = local.tags
 }
 
-# You may manage secrets in the vault (needed in Phase 5).
+# You may manage secrets in the vault (global-platform writes them).
 resource "azurerm_role_assignment" "me_kv_secrets" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Secrets Officer"
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-# Database backups (Phase 10): private, no storage keys, versioned.
+# Database backups: private, no storage keys, versioned.
 resource "azurerm_storage_account" "backups" {
   name                            = "stbackup${random_string.suffix.result}"
   resource_group_name             = azurerm_resource_group.foundation.name

@@ -57,7 +57,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     network_plugin      = "azure"
     network_plugin_mode = "overlay"                # pods get IPs from a private overlay range
     network_data_plane  = "cilium"                 # modern, fast networking (eBPF)
-    network_policy      = "cilium"                 # ENFORCES NetworkPolicies (Phase 6)
+    network_policy      = "cilium"                 # ENFORCES NetworkPolicies
     outbound_type       = "userAssignedNATGateway" # leave via our NAT + fixed IP
     pod_cidr            = "10.244.0.0/16"
     service_cidr        = "10.21.0.0/16"

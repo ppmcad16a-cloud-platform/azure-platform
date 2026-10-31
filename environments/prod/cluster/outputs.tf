@@ -3,7 +3,7 @@ output "cluster_name" {
 }
 
 output "egress_ip" {
-  description = "Add this to the MongoDB Atlas IP access list (Phase 5)"
+  description = "Fixed outgoing IP of the cluster - global-platform adds it to the MongoDB Atlas IP access list"
   value       = module.network.egress_ip
 }
 
