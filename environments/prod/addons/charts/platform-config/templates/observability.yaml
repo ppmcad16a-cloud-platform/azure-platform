@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------
-# Phase 9: observability plumbing for this cluster.
+# Observability plumbing for this cluster.
 # ---------------------------------------------------------------
 # Slack webhook for Alertmanager, copied from the vault. Alertmanager
 # mounts it as a FILE (alertmanagerSpec.secrets) - never in its config.

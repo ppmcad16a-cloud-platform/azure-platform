@@ -15,7 +15,7 @@ resource "azurerm_subnet" "nodes" {
 }
 
 # FIXED public IP for everything leaving the cluster
-# (MongoDB Atlas will allow only this IP - Phase 5).
+# (MongoDB Atlas allows only this IP).
 resource "azurerm_public_ip" "egress" {
   name                = "pip-${var.name}-egress"
   location            = var.location

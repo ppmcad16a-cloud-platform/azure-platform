@@ -18,7 +18,7 @@ provider "azurerm" {
   subscription_id     = var.subscription_id
   storage_use_azuread = true
 
-  # The services we need are already registered (Phase 0/3), so skip the slow
+  # The services we need are already registered in the subscription, so skip the slow
   # automatic registration you saw during bootstrap.
   resource_provider_registrations = "none"
 }
